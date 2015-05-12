@@ -15,7 +15,13 @@ class JibeExtension extends Extension
      */
     public function load(array $config, ContainerBuilder $container)
     {
-        $config = array('server' => null, 'client' => null, 'access-token' => null);
+        $config = array(
+            'server' => null,
+            'client' => null,
+            'access-token' => array(
+                'access_token' => ''
+            )
+        );
         if ($container->hasParameter('server')) {
             $config['server'] = $container->getParameter('server');
         }

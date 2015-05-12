@@ -10,6 +10,7 @@
 
         <service id="jibe.command.sync" class="Symcloud\Application\Jibe\Command\SyncCommand">
             <argument type="string">sync</argument>
+            <argument type="service" id="jibe.sync.synchronizer"/>
 
             <tag name="jibe.command" default="true"/>
         </service>
@@ -43,6 +44,31 @@
         </service>
 
         <service id="jibe.yml_dumper" class="Symfony\Component\Yaml\Dumper" />
+
+        <service id="jibe.sync.synchronizer.api.client" class="GuzzleHttp\Client">
+            <argument type="collection">
+                <argument type="string" key="base_url">%jibe.server%</argument>
+                <argument type="collection" key="defaults">
+                    <argument type="collection" key="cookies">
+                        <!--<argument type="string" key="XDEBUG_SESSION">XDEBUG_ECLIPSE</argument>-->
+                    </argument>
+                </argument>
+            </argument>
+        </service>
+
+        <service id="jibe.oauth2.access_token" class="League\OAuth2\Client\Token\AccessToken">
+            <argument>%jibe.access-token%</argument>
+        </service>
+
+        <service id="jibe.sync.synchronizer.api" class="Symcloud\Component\Sync\Api\SymcloudApi">
+            <argument type="service" id="jibe.sync.synchronizer.api.client"/>
+            <argument type="service" id="jibe.oauth2.access_token"/>
+            <argument type="service" id="jibe.oauth2.provider"/>
+        </service>
+
+        <service id="jibe.sync.synchronizer" class="Symcloud\Component\Sync\Synchronizer">
+            <argument type="service" id="jibe.sync.synchronizer.api"/>
+        </service>
     </services>
 
 </container>

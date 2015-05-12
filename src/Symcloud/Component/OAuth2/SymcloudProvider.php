@@ -19,7 +19,13 @@ class SymcloudProvider extends AbstractProvider
      */
     public function __construct($server, $client)
     {
-        parent::__construct(array('clientId' => $client['id'], 'clientSecret' => $client['secret']));
+        parent::__construct(
+            array(
+                'clientId' => $client['id'],
+                'clientSecret' => $client['secret'],
+                'authorizationHeader' => 'Bearer'
+            )
+        );
 
         $this->server = $server;
 
