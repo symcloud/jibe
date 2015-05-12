@@ -1,0 +1,37 @@
+#!/usr/bin/env php
+<?php
+
+set_time_limit(0);
+
+// include the composer autoloader
+require_once __DIR__ . '/../vendor/autoload.php';
+
+use Symcloud\Application\Jibe\DependencyInjection\CommandsCompilerPass;
+use Symcloud\Application\Jibe\DependencyInjection\JibeExtension;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader;
+
+$configDirectory = '.symcloud';
+if (!is_dir($configDirectory)) {
+    mkdir($configDirectory);
+}
+
+$container = new ContainerBuilder();
+$locator = new FileLocator($configDirectory);
+
+try {
+    $ymlLoader = new Loader\YamlFileLoader($container, $locator);
+    $ymlLoader->load('parameters.yml');
+} catch (\Exception $ex) {
+}
+
+$extension = new JibeExtension();
+$extension->load(array(), $container);
+
+$container->addCompilerPass(new CommandsCompilerPass());
+
+$container->compile();
+
+$app = $container->get('jibe.application');
+$app->run();

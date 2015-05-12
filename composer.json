@@ -1,0 +1,25 @@
+{
+    "name": "symcloud/jibe",
+    "description": "Synchronization tool for symcloud",
+    "type": "cli",
+    "require": {
+        "php": ">=5.5",
+        "symfony/console": "~2.6",
+        "symfony/dependency-injection": "~2.6",
+        "symfony/config": "~2.6",
+        "symfony/yaml": "~2.6",
+        "incenteev/composer-parameter-handler": "~2.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Johannes Wachter",
+            "email": "johannes.wachter@massiveart.at"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    }
+}

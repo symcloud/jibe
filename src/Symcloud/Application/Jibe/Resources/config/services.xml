@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <service id="jibe.application" class="Symcloud\Application\Jibe\JibeApplication">
+            <argument type="string">Symcloud JIBE</argument>
+        </service>
+
+        <service id="jibe.command.sync" class="Symcloud\Application\Jibe\Command\SyncCommand">
+            <argument type="string">sync</argument>
+
+            <tag name="jibe.command" default="true"/>
+        </service>
+    </services>
+
+</container>
