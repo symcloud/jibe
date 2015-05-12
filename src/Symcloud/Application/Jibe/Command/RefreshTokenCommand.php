@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Symcloud Distributed-Storage.
+ *
+ * (c) Symcloud and Johannes Wachter
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Symcloud\Application\Jibe\Command;
 
 use League\OAuth2\Client\Provider\ProviderInterface;
@@ -27,6 +36,7 @@ class RefreshTokenCommand extends Command
 
     /**
      * RefreshTokenCommand constructor.
+     *
      * @param null|string $name
      * @param array $config
      * @param ConfigurationDumper $dumper
@@ -54,7 +64,7 @@ class RefreshTokenCommand extends Command
                 'token' => $accessToken->accessToken,
                 'refresh_token' => $accessToken->refreshToken,
                 'expires' => $accessToken->expires,
-                'uid' => $accessToken->uid
+                'uid' => $accessToken->uid,
             )
         );
 

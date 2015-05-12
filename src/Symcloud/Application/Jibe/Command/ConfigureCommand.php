@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Symcloud Distributed-Storage.
+ *
+ * (c) Symcloud and Johannes Wachter
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Symcloud\Application\Jibe\Command;
 
 use League\OAuth2\Client\Provider\ProviderInterface;
@@ -14,7 +23,7 @@ use Symfony\Component\Console\Question\Question;
 class ConfigureCommand extends Command
 {
     /**
-     * FIXME utilize? or use symfony validation
+     * FIXME utilize? or use symfony validation.
      */
     const PATTERN = '~^
             (%s)://                                 # protocol
@@ -49,6 +58,7 @@ class ConfigureCommand extends Command
 
     /**
      * ConfigureCommand constructor.
+     *
      * @param string $name
      * @param array $config
      * @param ConfigurationDumper $dumper
@@ -155,7 +165,7 @@ class ConfigureCommand extends Command
             'client',
             array(
                 'id' => $input->getOption('client-id'),
-                'secret' => $input->getOption('client-secret')
+                'secret' => $input->getOption('client-secret'),
             )
         );
         $this->dumper->setConfig(
@@ -164,7 +174,7 @@ class ConfigureCommand extends Command
                 'access_token' => $accessToken->accessToken,
                 'refresh_token' => $accessToken->refreshToken,
                 'expires' => $accessToken->expires,
-                'uid' => $accessToken->uid
+                'uid' => $accessToken->uid,
             )
         );
 

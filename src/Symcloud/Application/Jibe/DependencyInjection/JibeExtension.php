@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Symcloud Distributed-Storage.
+ *
+ * (c) Symcloud and Johannes Wachter
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Symcloud\Application\Jibe\DependencyInjection;
 
 use Symfony\Component\Config\FileLocator;
@@ -9,7 +18,6 @@ use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
 
 class JibeExtension extends Extension
 {
-
     /**
      * {@inheritdoc}
      */
@@ -19,8 +27,8 @@ class JibeExtension extends Extension
             'server' => null,
             'client' => null,
             'access-token' => array(
-                'access_token' => ''
-            )
+                'access_token' => '',
+            ),
         );
         if ($container->hasParameter('server')) {
             $config['server'] = $container->getParameter('server');

@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Symcloud Distributed-Storage.
+ *
+ * (c) Symcloud and Johannes Wachter
+ *
+ * This source file is subject to the MIT license that is bundled
+ * with this source code in the file LICENSE.
+ */
+
 namespace Symcloud\Component\OAuth2;
 
 use League\OAuth2\Client\Provider\AbstractProvider;
@@ -14,6 +23,7 @@ class SymcloudProvider extends AbstractProvider
 
     /**
      * SymcloudProvider constructor.
+     *
      * @param string $server
      * @param string $client
      */
@@ -23,7 +33,7 @@ class SymcloudProvider extends AbstractProvider
             array(
                 'clientId' => $client['id'],
                 'clientSecret' => $client['secret'],
-                'authorizationHeader' => 'Bearer'
+                'authorizationHeader' => 'Bearer',
             )
         );
 
@@ -72,6 +82,7 @@ class SymcloudProvider extends AbstractProvider
      * 'https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token='.$token
      *
      * @param AccessToken $token
+     *
      * @return string
      */
     public function urlUserDetails(AccessToken $token)
@@ -85,6 +96,7 @@ class SymcloudProvider extends AbstractProvider
      *
      * @param object $response
      * @param AccessToken $token
+     *
      * @return mixed
      */
     public function userDetails($response, AccessToken $token)
