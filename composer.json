@@ -8,7 +8,8 @@
         "symfony/dependency-injection": "~2.6",
         "symfony/config": "~2.6",
         "symfony/yaml": "~2.6",
-        "incenteev/composer-parameter-handler": "~2.1"
+        "incenteev/composer-parameter-handler": "~2.1",
+        "league/oauth2-client": "0.10.*@dev"
     },
     "license": "MIT",
     "authors": [

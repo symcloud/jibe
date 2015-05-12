@@ -13,6 +13,36 @@
 
             <tag name="jibe.command" default="true"/>
         </service>
+
+        <service id="jibe.command.configure" class="Symcloud\Application\Jibe\Command\ConfigureCommand">
+            <argument type="string">configure</argument>
+            <argument>%jibe.configuration%</argument>
+            <argument type="service" id="jibe.configuration.dumper" />
+            <argument type="service" id="jibe.oauth2.provider" />
+
+            <tag name="jibe.command"/>
+        </service>
+
+        <service id="jibe.command.refresh-token" class="Symcloud\Application\Jibe\Command\RefreshTokenCommand">
+            <argument type="string">refresh-token</argument>
+            <argument>%jibe.configuration%</argument>
+            <argument type="service" id="jibe.configuration.dumper" />
+            <argument type="service" id="jibe.oauth2.provider" />
+
+            <tag name="jibe.command"/>
+        </service>
+
+        <service id="jibe.oauth2.provider" class="Symcloud\Component\OAuth2\SymcloudProvider">
+            <argument>%jibe.server%</argument>
+            <argument>%jibe.client%</argument>
+        </service>
+
+        <service id="jibe.configuration.dumper" class="Symcloud\Application\Jibe\Configuration\ConfigurationDumper">
+            <argument>%jibe.configuration%</argument>
+            <argument type="service" id="jibe.yml_dumper"/>
+        </service>
+
+        <service id="jibe.yml_dumper" class="Symfony\Component\Yaml\Dumper" />
     </services>
 
 </container>

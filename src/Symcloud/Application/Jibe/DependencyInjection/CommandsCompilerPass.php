@@ -30,7 +30,7 @@ class CommandsCompilerPass implements CompilerPassInterface
                 array(new Reference($id))
             );
             foreach ($tags as $attributes) {
-                if($attributes['default']){
+                if (array_key_exists('default', $attributes) && $attributes['default']) {
                     $definition->addMethodCall(
                         'setDefaultCommand',
                         array($serviceDefinition->getArgument(0))

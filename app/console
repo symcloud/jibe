@@ -17,6 +17,8 @@ if (!is_dir($configDirectory)) {
     mkdir($configDirectory);
 }
 
+define('PARAMETER_FILE', realpath($configDirectory).'/parameters.yml');
+
 $container = new ContainerBuilder();
 $locator = new FileLocator($configDirectory);
 
