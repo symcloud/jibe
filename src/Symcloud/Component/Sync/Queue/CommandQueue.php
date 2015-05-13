@@ -12,6 +12,7 @@
 namespace Symcloud\Component\Sync\Queue;
 
 use Symcloud\Component\Sync\Api\ApiInterface;
+use Symcloud\Component\Sync\HashGenerator;
 use Symcloud\Component\Sync\Queue\Command\CommandInterface;
 use Symcloud\Component\Sync\Queue\Command\UploadCommand;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,22 +35,29 @@ class CommandQueue implements CommandQueueInterface
     private $api;
 
     /**
+     * @var HashGenerator
+     */
+    private $hashGenerator;
+
+    /**
      * CommandQueue constructor.
      *
      * @param OutputInterface $output
      * @param ApiInterface $api
+     * @param HashGenerator $hashGenerator
      */
-    public function __construct(OutputInterface $output, ApiInterface $api)
+    public function __construct(OutputInterface $output, ApiInterface $api, HashGenerator $hashGenerator)
     {
         $this->output = $output;
         $this->api = $api;
 
         $this->queue = array();
+        $this->hashGenerator = $hashGenerator;
     }
 
-    public function upload($file)
+    public function upload($file, $childPath)
     {
-        $this->enqueue(new UploadCommand($file, $this->api));
+        $this->enqueue(new UploadCommand($file, $childPath, $this->api, $this->hashGenerator));
     }
 
     public function enqueue(CommandInterface $command)
@@ -57,11 +65,22 @@ class CommandQueue implements CommandQueueInterface
         $this->queue[] = $command;
     }
 
-    public function execute()
+    public function execute($message)
     {
-        // TODO collect patch commands and send it to the server
+        $patch = array();
         foreach ($this->queue as $command) {
-            $command->execute($this->output);
+            $patchCommand = $command->execute($this->output);
+            if ($patchCommand !== null) {
+                $patch[] = $patchCommand;
+            }
+        }
+
+        if (count($patch) > 0) {
+            $patch[] = array(
+                'cmd' => 'commit',
+                'message' => $message,
+            );
+            $this->api->patch($patch);
         }
     }
 }

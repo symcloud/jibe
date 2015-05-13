@@ -49,10 +49,10 @@ class Synchronizer implements SynchronizerInterface
     /**
      * {@inheritdoc}
      */
-    public function sync(OutputInterface $output)
+    public function sync(OutputInterface $output, $message)
     {
         $this->processFolder(ROOT_FOLDER);
-        $this->commandQueue->execute();
+        $this->commandQueue->execute($message);
     }
 
     private function getDirectory($path, $depth = null)
@@ -85,7 +85,7 @@ class Synchronizer implements SynchronizerInterface
     {
         $filePath = sprintf('%s/%s', $path, $file);
         if ($serverFile === null) {
-            return $this->commandQueue->upload($filePath);
+            return $this->commandQueue->upload($filePath, $this->filesystem->makePathRelative($filePath, ROOT_FOLDER));
         }
 
         $fileHash = md5_file($filePath);

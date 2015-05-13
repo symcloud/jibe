@@ -63,7 +63,7 @@
                 <argument type="string" key="base_url">%jibe.server%</argument>
                 <argument type="collection" key="defaults">
                     <argument type="collection" key="cookies">
-                        <!--<argument type="string" key="XDEBUG_SESSION">XDEBUG_ECLIPSE</argument>-->
+                        <!-- <argument type="string" key="XDEBUG_SESSION">XDEBUG_ECLIPSE</argument> -->
                     </argument>
                 </argument>
             </argument>
@@ -82,6 +82,7 @@
         <service id="jibe.sync.synchronizer.queue" class="Symcloud\Component\Sync\Queue\CommandQueue">
             <argument type="service" id="jibe.application.output"/>
             <argument type="service" id="jibe.sync.synchronizer.api"/>
+            <argument type="service" id="jibe.sync.hash_generator"/>
         </service>
 
         <service id="jibe.sync.synchronizer.filesystem" class="Symfony\Component\Filesystem\Filesystem"/>
@@ -90,6 +91,11 @@
             <argument type="service" id="jibe.sync.synchronizer.api"/>
             <argument type="service" id="jibe.sync.synchronizer.filesystem"/>
             <argument type="service" id="jibe.sync.synchronizer.queue"/>
+        </service>
+
+        <service id="jibe.sync.hash_generator" class="Symcloud\Component\Sync\HashGenerator">
+            <argument type="string">%jibe.hash-algorithm%</argument>
+            <argument type="string">%jibe.hash-key%</argument>
         </service>
     </services>
 

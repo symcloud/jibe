@@ -26,6 +26,8 @@ class JibeExtension extends Extension
         $config = array(
             'server' => null,
             'client' => null,
+            'hash-algorithm' => null,
+            'hash-key' => null,
             'access-token' => array(
                 'access_token' => '',
             ),
@@ -39,8 +41,16 @@ class JibeExtension extends Extension
         if ($container->hasParameter('access-token')) {
             $config['access-token'] = $container->getParameter('access-token');
         }
+        if ($container->hasParameter('hash-algorithm')) {
+            $config['hash-algorithm'] = $container->getParameter('hash-algorithm');
+        }
+        if ($container->hasParameter('hash-key')) {
+            $config['hash-key'] = $container->getParameter('hash-key');
+        }
         $container->setParameter('jibe.server', $config['server']);
         $container->setParameter('jibe.client', $config['client']);
+        $container->setParameter('jibe.hash-key', $config['hash-key']);
+        $container->setParameter('jibe.hash-algorithm', $config['hash-algorithm']);
         $container->setParameter('jibe.access-token', $config['access-token']);
 
         $container->setParameter('jibe.configuration', $config);

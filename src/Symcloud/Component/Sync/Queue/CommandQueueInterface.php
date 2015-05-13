@@ -15,9 +15,9 @@ use Symcloud\Component\Sync\Queue\Command\CommandInterface;
 
 interface CommandQueueInterface
 {
-    public function upload($file);
+    public function upload($file, $childPath);
 
     public function enqueue(CommandInterface $command);
 
-    public function execute();
+    public function execute($message);
 }

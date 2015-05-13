@@ -15,5 +15,5 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 interface SynchronizerInterface
 {
-    public function sync(OutputInterface $output);
+    public function sync(OutputInterface $output, $message);
 }

@@ -29,7 +29,14 @@ interface ApiInterface
      *
      * @return RequestInterface
      */
-    public function upload($filePath);
+    public function fileUpload($filePath);
+
+    /**
+     * @param string $hash
+     *
+     * @return bool
+     */
+    public function fileExists($hash);
 
     /**
      * @param RequestInterface $request
@@ -37,4 +44,9 @@ interface ApiInterface
      * @return Response
      */
     public function send(RequestInterface $request);
+
+    /**
+     * @param array $patch
+     */
+    public function patch($patch);
 }

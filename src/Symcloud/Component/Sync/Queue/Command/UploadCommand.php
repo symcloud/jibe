@@ -13,6 +13,7 @@ namespace Symcloud\Component\Sync\Queue\Command;
 
 use GuzzleHttp\Event\ProgressEvent;
 use Symcloud\Component\Sync\Api\ApiInterface;
+use Symcloud\Component\Sync\HashGenerator;
 use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Console\Helper\ProgressBar;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -30,15 +31,29 @@ class UploadCommand implements CommandInterface
     private $api;
 
     /**
+     * @var
+     */
+    private $childPath;
+
+    /**
+     * @var HashGenerator
+     */
+    private $hashGenerator;
+
+    /**
      * UploadCommand constructor.
      *
      * @param string $filePath
+     * @param $childPath
      * @param ApiInterface $api
+     * @param HashGenerator $hashGenerator
      */
-    public function __construct($filePath, ApiInterface $api)
+    public function __construct($filePath, $childPath, ApiInterface $api, HashGenerator $hashGenerator)
     {
         $this->filePath = $filePath;
         $this->api = $api;
+        $this->childPath = $childPath;
+        $this->hashGenerator = $hashGenerator;
     }
 
     /**
@@ -46,27 +61,37 @@ class UploadCommand implements CommandInterface
      */
     public function execute(OutputInterface $output)
     {
-        $fileSize = filesize($this->filePath);
-        $progress = new ProgressBar($output);
-        $progress->setMessage(sprintf('Upload File %s', $this->filePath));
+        $fileHash = $this->hashGenerator->generateFileHash($this->filePath);
+        if (!$this->api->fileExists($fileHash)) {
+            $fileSize = filesize($this->filePath);
+            $progress = new ProgressBar($output);
+            $progress->setMessage(sprintf('Upload File %s', $this->childPath));
 
-        $progress->setFormat("%message%\n [%bar%] %percent:3s%% " . Helper::formatMemory($fileSize));
-        $progress->start($fileSize);
+            $progress->setFormat("%message%\n [%bar%] %percent:3s%% " . Helper::formatMemory($fileSize));
+            $progress->start($fileSize);
 
-        $request = $this->api->upload($this->filePath);
-        $request->getEmitter()->on(
-            'progress',
-            function (ProgressEvent $e) use ($progress) {
-                $progress->setProgress($e->uploaded);
-            }
+            $request = $this->api->fileUpload($this->filePath);
+            $request->getEmitter()->on(
+                'progress',
+                function (ProgressEvent $e) use ($progress) {
+                    $progress->setProgress($e->uploaded);
+                }
+            );
+
+            $response = $this->api->send($request);
+            $progress->finish();
+            $output->writeln('');
+            $output->writeln('');
+
+            $body = $response->getBody()->getContents();
+            $blobFile = json_decode($body, true);
+            $fileHash = $blobFile['hash'];
+        }
+
+        return array(
+            'cmd' => 'post',
+            'path' => $this->childPath,
+            'file' => $fileHash,
         );
-
-        $response = $this->api->send($request);
-        $progress->finish();
-        $output->writeln('');
-        $output->writeln('');
-        $output->writeln('');
-
-        return json_encode($response->getBody()->getContents(), true)['hash'];
     }
 }

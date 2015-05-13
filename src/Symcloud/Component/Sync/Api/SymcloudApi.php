@@ -64,7 +64,7 @@ class SymcloudApi implements ApiInterface
     /**
      * {@inheritdoc}
      */
-    public function upload($filePath)
+    public function fileUpload($filePath)
     {
         $request = $this->client->createRequest(
             'POST',
@@ -73,6 +73,24 @@ class SymcloudApi implements ApiInterface
         );
 
         return $request;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function fileExists($hash)
+    {
+        $response = $this->client->head('/admin/api/blobs/' . $hash);
+
+        return $response->getStatusCode() === 200;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function patch($patch)
+    {
+        return $this->client->patch('/admin/api/files', array('body' => array($patch)));
     }
 
     /**

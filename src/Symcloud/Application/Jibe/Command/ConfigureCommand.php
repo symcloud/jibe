@@ -79,7 +79,9 @@ class ConfigureCommand extends Command
             ->addOption('username', 'u', InputOption::VALUE_OPTIONAL)
             ->addOption('password', 'p', InputOption::VALUE_OPTIONAL)
             ->addOption('client-id', null, InputOption::VALUE_OPTIONAL)
-            ->addOption('client-secret', null, InputOption::VALUE_OPTIONAL);
+            ->addOption('client-secret', null, InputOption::VALUE_OPTIONAL)
+            ->addOption('hash-algorithm', null, InputOption::VALUE_REQUIRED, '', 'md5')
+            ->addOption('hash-key', null, InputOption::VALUE_REQUIRED, '', 'ThisTokenIsNotSoSecretChangeIt');
     }
 
     protected function interact(InputInterface $input, OutputInterface $output)
@@ -116,7 +118,8 @@ class ConfigureCommand extends Command
 
         if (!$input->getOption('client-secret')) {
             $question = new Question(
-                'Client-Secret: '
+                'Client-Secret: ',
+                $this->config['client']['secret']
             );
             $secret = $helper->ask($input, $output, $question);
             $input->setOption('client-secret', $secret);
@@ -177,6 +180,9 @@ class ConfigureCommand extends Command
                 'uid' => $accessToken->uid,
             )
         );
+
+        $this->dumper->setConfig('hash-algorithm', $input->getOption('hash-algorithm'));
+        $this->dumper->setConfig('hash-key', $input->getOption('hash-key'));
 
         $this->dumper->dump();
     }
