@@ -44,6 +44,8 @@ class SymcloudApi implements ApiInterface
         $this->client = $client;
         $this->token = $token;
         $this->provider = $provider;
+
+        $this->client->setDefaultOption('headers', $this->provider->getHeaders($this->token));
     }
 
     /**
@@ -52,7 +54,7 @@ class SymcloudApi implements ApiInterface
     public function getDirectory($path = '/', $depth = -1)
     {
         $path = ($path !== '/') ? ('/' . ltrim($path, '/')) : '';
-        $response = $this->client->get('/admin/api/directory' . $path, array('headers' => $this->provider->getHeaders($this->token)));
+        $response = $this->client->get('/admin/api/directory' . $path);
 
         return json_decode($response->getBody()->getContents(), true);
     }

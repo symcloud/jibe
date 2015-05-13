@@ -37,6 +37,6 @@ class SyncCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->synchronizer->sync();
+        $this->synchronizer->sync($output);
     }
 }
