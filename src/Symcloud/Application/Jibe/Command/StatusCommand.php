@@ -51,19 +51,44 @@ class StatusCommand extends Command
   \::/  /     /\/:/  /    \:\~\:\/:/  / \:\~\:\ \/__/
    \/__/      \::/__/      \:\ \::/  /   \:\ \:\__\
                \:\__\       \:\/:/  /     \:\ \/__/
-                \/__/        \::/__/       \:\__\
-                              ~~            \/__/
+                \/__/        \__/__/       \:\__\
+                                            \/__/
 EOF;
         $output->writeln($logo);
 
         $output->write('Token-Status: ');
 
         if ($this->token->accessToken === '') {
-            $output->writeln('<error>Not configured</error>');
+            $this->notConfigured($output);
         } elseif (time() > $this->token->expires) {
-            $output->writeln('<comment>Expired</comment>');
+            $this->expired($output);
         } else {
-            $output->writeln('<info>OK</info>');
+            $this->ok($output);
         }
+    }
+
+    private function expired(OutputInterface $output)
+    {
+        $output->writeln('<comment>Expired</comment>');
+
+        if ($this->token->refreshToken !== '' && $this->token->refreshToken !== null) {
+            $output->writeln('');
+            $output->writeln('   run jibe refresh-token');
+        }
+    }
+
+    private function notConfigured(OutputInterface $output)
+    {
+        $output->writeln('<error>Not configured</error>');
+
+        $output->writeln('');
+        $output->writeln('   run jibe configure');
+    }
+
+    private function ok(OutputInterface $output)
+    {
+        $output->writeln('<info>OK</info>');
+        $output->writeln('   run <comment>jibe sync</comment> to start synchronization');
+        $output->writeln('');
     }
 }
