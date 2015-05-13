@@ -11,6 +11,9 @@
 
 namespace Symcloud\Component\Sync\Api;
 
+use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Message\Response;
+
 interface ApiInterface
 {
     /**
@@ -20,4 +23,18 @@ interface ApiInterface
      * @return array
      */
     public function getDirectory($path = '/', $depth = -1);
+
+    /**
+     * @param string $filePath
+     *
+     * @return RequestInterface
+     */
+    public function upload($filePath);
+
+    /**
+     * @param RequestInterface $request
+     *
+     * @return Response
+     */
+    public function send(RequestInterface $request);
 }

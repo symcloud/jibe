@@ -12,6 +12,8 @@
 namespace Symcloud\Component\Sync\Api;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Message\RequestInterface;
+use GuzzleHttp\Post\PostFile;
 use League\OAuth2\Client\Provider\ProviderInterface;
 use League\OAuth2\Client\Token\AccessToken;
 
@@ -53,9 +55,31 @@ class SymcloudApi implements ApiInterface
      */
     public function getDirectory($path = '/', $depth = -1)
     {
-        $path = ($path !== '/') ? ('/' . ltrim($path, '/')) : '';
-        $response = $this->client->get('/admin/api/directory' . $path);
+        $path = ($path !== './') ? ('/' . ltrim($path, '/')) : '';
+        $response = $this->client->get(rtrim('/admin/api/directory' . $path, '/'));
 
         return json_decode($response->getBody()->getContents(), true);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function upload($filePath)
+    {
+        $request = $this->client->createRequest(
+            'POST',
+            '/admin/api/blobs',
+            array('body' => array('blob-file' => new PostFile('blob-file', fopen($filePath, 'r'))))
+        );
+
+        return $request;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function send(RequestInterface $request)
+    {
+        return $this->client->send($request);
     }
 }

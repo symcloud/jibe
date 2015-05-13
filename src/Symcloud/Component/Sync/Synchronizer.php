@@ -27,18 +27,23 @@ class Synchronizer implements SynchronizerInterface
      * @var Filesystem
      */
     private $filesystem;
+    /**
+     * @var CommandQueueInterface
+     */
+    private $commandQueue;
 
     /**
      * Synchronizer constructor.
      *
      * @param ApiInterface $api
+     * @param Filesystem $filesystem
+     * @param CommandQueueInterface $commandQueue
      */
-    public function __construct(ApiInterface $api)
+    public function __construct(ApiInterface $api, Filesystem $filesystem, CommandQueueInterface $commandQueue)
     {
         $this->api = $api;
-
-        // TODO inject
-        $this->filesystem = new Filesystem();
+        $this->filesystem = $filesystem;
+        $this->commandQueue = $commandQueue;
     }
 
     /**
@@ -46,10 +51,8 @@ class Synchronizer implements SynchronizerInterface
      */
     public function sync(OutputInterface $output)
     {
-        $queue = new Queue\CommandQueue($output);
-
-        $this->processFolder(ROOT_FOLDER, $queue);
-        $queue->execute();
+        $this->processFolder(ROOT_FOLDER);
+        $this->commandQueue->execute();
     }
 
     private function getDirectory($path, $depth = null)
@@ -57,7 +60,7 @@ class Synchronizer implements SynchronizerInterface
         return $this->api->getDirectory($path, $depth)['_embedded']['children'];
     }
 
-    private function processFolder($path, CommandQueueInterface $queue, $serverFolder = null)
+    private function processFolder($path, $serverFolder = null)
     {
         if (!$serverFolder) {
             $serverFolder = $this->getDirectory($this->filesystem->makePathRelative($path, ROOT_FOLDER));
@@ -67,7 +70,8 @@ class Synchronizer implements SynchronizerInterface
             if ($file !== '..' && $file !== '.' && $file !== '.symcloud' && strpos($file, '.') !== 0) {
                 $childPath = $path . '/' . $file;
                 if (is_file($childPath)) {
-                    $this->processFile($path, $file, $queue, $serverFolder[$file] ?: null);
+                    $serverFile = isset($serverFolder[$file]) ? $serverFolder[$file] : null;
+                    $this->processFile($path, $file, $serverFile);
                     unset($serverFolder[$file]);
                 }
             }
@@ -77,11 +81,11 @@ class Synchronizer implements SynchronizerInterface
         // TODO processServerNotExistingFiles
     }
 
-    private function processFile($path, $file, CommandQueueInterface $queue, $serverFile = null)
+    private function processFile($path, $file, $serverFile = null)
     {
         $filePath = sprintf('%s/%s', $path, $file);
         if ($serverFile === null) {
-            return $queue->upload($filePath);
+            return $this->commandQueue->upload($filePath);
         }
 
         $fileHash = md5_file($filePath);

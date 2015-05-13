@@ -37,10 +37,12 @@ class CommandQueue implements CommandQueueInterface
      * CommandQueue constructor.
      *
      * @param OutputInterface $output
+     * @param ApiInterface $api
      */
-    public function __construct(OutputInterface $output)
+    public function __construct(OutputInterface $output, ApiInterface $api)
     {
         $this->output = $output;
+        $this->api = $api;
 
         $this->queue = array();
     }
@@ -57,6 +59,7 @@ class CommandQueue implements CommandQueueInterface
 
     public function execute()
     {
+        // TODO collect patch commands and send it to the server
         foreach ($this->queue as $command) {
             $command->execute($this->output);
         }

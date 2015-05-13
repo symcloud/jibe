@@ -6,7 +6,13 @@
     <services>
         <service id="jibe.application" class="Symcloud\Application\Jibe\JibeApplication">
             <argument type="string">Symcloud JIBE</argument>
+            <argument type="service" id="jibe.application.input"/>
+            <argument type="service" id="jibe.application.output"/>
         </service>
+
+        <service id="jibe.application.output" class="Symfony\Component\Console\Output\ConsoleOutput" />
+
+        <service id="jibe.application.input" class="Symfony\Component\Console\Input\ArgvInput" />
 
         <service id="jibe.command.status" class="Symcloud\Application\Jibe\Command\StatusCommand">
             <argument type="string">status</argument>
@@ -73,8 +79,17 @@
             <argument type="service" id="jibe.oauth2.provider"/>
         </service>
 
+        <service id="jibe.sync.synchronizer.queue" class="Symcloud\Component\Sync\Queue\CommandQueue">
+            <argument type="service" id="jibe.application.output"/>
+            <argument type="service" id="jibe.sync.synchronizer.api"/>
+        </service>
+
+        <service id="jibe.sync.synchronizer.filesystem" class="Symfony\Component\Filesystem\Filesystem"/>
+
         <service id="jibe.sync.synchronizer" class="Symcloud\Component\Sync\Synchronizer">
             <argument type="service" id="jibe.sync.synchronizer.api"/>
+            <argument type="service" id="jibe.sync.synchronizer.filesystem"/>
+            <argument type="service" id="jibe.sync.synchronizer.queue"/>
         </service>
     </services>
 
