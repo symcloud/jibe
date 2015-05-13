@@ -8,11 +8,18 @@
             <argument type="string">Symcloud JIBE</argument>
         </service>
 
+        <service id="jibe.command.status" class="Symcloud\Application\Jibe\Command\StatusCommand">
+            <argument type="string">status</argument>
+            <argument type="service" id="jibe.oauth2.access_token"/>
+
+            <tag name="jibe.command" default="true"/>
+        </service>
+
         <service id="jibe.command.sync" class="Symcloud\Application\Jibe\Command\SyncCommand">
             <argument type="string">sync</argument>
             <argument type="service" id="jibe.sync.synchronizer"/>
 
-            <tag name="jibe.command" default="true"/>
+            <tag name="jibe.command"/>
         </service>
 
         <service id="jibe.command.configure" class="Symcloud\Application\Jibe\Command\ConfigureCommand">

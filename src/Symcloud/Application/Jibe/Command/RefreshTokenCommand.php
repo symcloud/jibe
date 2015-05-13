@@ -61,7 +61,7 @@ class RefreshTokenCommand extends Command
         $this->dumper->setConfig(
             'access-token',
             array(
-                'token' => $accessToken->accessToken,
+                'access_token' => $accessToken->accessToken,
                 'refresh_token' => $accessToken->refreshToken,
                 'expires' => $accessToken->expires,
                 'uid' => $accessToken->uid,
