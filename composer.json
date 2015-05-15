@@ -11,7 +11,8 @@
         "incenteev/composer-parameter-handler": "~2.1",
         "league/oauth2-client": "0.10.*@dev",
         "guzzlehttp/guzzle": "~5.2",
-        "symfony/filesystem": "~2.6"
+        "symfony/filesystem": "~2.6",
+        "textalk/websocket": "~1.1"
     },
     "license": "MIT",
     "authors": [

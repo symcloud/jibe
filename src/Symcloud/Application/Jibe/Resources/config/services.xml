@@ -46,6 +46,12 @@
             <tag name="jibe.command"/>
         </service>
 
+        <service id="jibe.command.test" class="Symcloud\Application\Jibe\Command\BlobUploadCommand">
+            <argument type="string">upload-blob</argument>
+
+            <tag name="jibe.command"/>
+        </service>
+
         <service id="jibe.oauth2.provider" class="Symcloud\Component\OAuth2\SymcloudProvider">
             <argument>%jibe.server%</argument>
             <argument>%jibe.client%</argument>
