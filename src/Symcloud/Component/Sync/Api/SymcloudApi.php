@@ -12,6 +12,7 @@
 namespace Symcloud\Component\Sync\Api;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Post\PostFile;
 use League\OAuth2\Client\Provider\ProviderInterface;
@@ -80,7 +81,11 @@ class SymcloudApi implements ApiInterface
      */
     public function fileExists($hash)
     {
-        $response = $this->client->head('/admin/api/blobs/' . $hash);
+        try {
+            $response = $this->client->head('/admin/api/blobs/' . $hash);
+        } catch (ClientException $ex) {
+            $response = $ex->getResponse();
+        }
 
         return $response->getStatusCode() === 200;
     }
@@ -90,7 +95,7 @@ class SymcloudApi implements ApiInterface
      */
     public function patch($patch)
     {
-        return $this->client->patch('/admin/api/files', array('body' => array($patch)));
+        return $this->client->patch('/admin/api/files', array('body' => array('commands' => $patch)));
     }
 
     /**

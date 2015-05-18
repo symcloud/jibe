@@ -57,6 +57,12 @@ class JibeExtension extends Extension
 
         $locator = new FileLocator(__DIR__ . '/../Resources/config');
 
+        $defaults = array();
+        if (true === DEBUG) {
+            $defaults['cookies'] = array('XDEBUG_SESSION' => 'XDEBUG_ECLIPSE');
+        }
+        $container->setParameter('jibe.sync.synchronizer.api.client.defaults', $defaults);
+
         $xmlLoader = new XmlFileLoader($container, $locator);
         $xmlLoader->load('services.xml');
     }

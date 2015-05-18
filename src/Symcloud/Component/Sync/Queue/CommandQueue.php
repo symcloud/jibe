@@ -16,6 +16,7 @@ use Symcloud\Component\Sync\HashGenerator;
 use Symcloud\Component\Sync\Queue\Command\CommandInterface;
 use Symcloud\Component\Sync\Queue\Command\UploadCommand;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 
 class CommandQueue implements CommandQueueInterface
 {
@@ -38,6 +39,10 @@ class CommandQueue implements CommandQueueInterface
      * @var HashGenerator
      */
     private $hashGenerator;
+    /**
+     * @var Filesystem
+     */
+    private $filesystem;
 
     /**
      * CommandQueue constructor.
@@ -45,18 +50,27 @@ class CommandQueue implements CommandQueueInterface
      * @param OutputInterface $output
      * @param ApiInterface $api
      * @param HashGenerator $hashGenerator
+     * @param Filesystem $filesystem
      */
-    public function __construct(OutputInterface $output, ApiInterface $api, HashGenerator $hashGenerator)
-    {
+    public function __construct(
+        OutputInterface $output,
+        ApiInterface $api,
+        HashGenerator $hashGenerator,
+        Filesystem $filesystem
+    ) {
         $this->output = $output;
         $this->api = $api;
+        $this->hashGenerator = $hashGenerator;
+        $this->filesystem = $filesystem;
 
         $this->queue = array();
-        $this->hashGenerator = $hashGenerator;
     }
 
-    public function upload($file, $childPath)
+    public function upload($file)
     {
+        $this->output->writeln('       - upload file');
+
+        $childPath = '/' . rtrim($this->filesystem->makePathRelative($file, ROOT_FOLDER), '/');
         $this->enqueue(new UploadCommand($file, $childPath, $this->api, $this->hashGenerator));
     }
 
@@ -77,7 +91,7 @@ class CommandQueue implements CommandQueueInterface
 
         if (count($patch) > 0) {
             $patch[] = array(
-                'cmd' => 'commit',
+                'command' => 'commit',
                 'message' => $message,
             );
             $this->api->patch($patch);

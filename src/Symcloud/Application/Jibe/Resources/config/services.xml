@@ -10,10 +10,6 @@
             <argument type="service" id="jibe.application.output"/>
         </service>
 
-        <service id="jibe.application.output" class="Symfony\Component\Console\Output\ConsoleOutput" />
-
-        <service id="jibe.application.input" class="Symfony\Component\Console\Input\ArgvInput" />
-
         <service id="jibe.command.status" class="Symcloud\Application\Jibe\Command\StatusCommand">
             <argument type="string">status</argument>
             <argument type="service" id="jibe.oauth2.access_token"/>
@@ -61,11 +57,7 @@
         <service id="jibe.sync.synchronizer.api.client" class="GuzzleHttp\Client">
             <argument type="collection">
                 <argument type="string" key="base_url">%jibe.server%</argument>
-                <argument type="collection" key="defaults">
-                    <argument type="collection" key="cookies">
-                        <!-- <argument type="string" key="XDEBUG_SESSION">XDEBUG_ECLIPSE</argument> -->
-                    </argument>
-                </argument>
+                <argument key="defaults">%jibe.sync.synchronizer.api.client.defaults%</argument>
             </argument>
         </service>
 
@@ -83,6 +75,7 @@
             <argument type="service" id="jibe.application.output"/>
             <argument type="service" id="jibe.sync.synchronizer.api"/>
             <argument type="service" id="jibe.sync.hash_generator"/>
+            <argument type="service" id="jibe.sync.synchronizer.filesystem"/>
         </service>
 
         <service id="jibe.sync.synchronizer.filesystem" class="Symfony\Component\Filesystem\Filesystem"/>
@@ -91,6 +84,8 @@
             <argument type="service" id="jibe.sync.synchronizer.api"/>
             <argument type="service" id="jibe.sync.synchronizer.filesystem"/>
             <argument type="service" id="jibe.sync.synchronizer.queue"/>
+            <argument type="service" id="jibe.sync.hash_generator"/>
+            <argument type="service" id="jibe.application.output"/>
         </service>
 
         <service id="jibe.sync.hash_generator" class="Symcloud\Component\Sync\HashGenerator">

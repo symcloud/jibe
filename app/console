@@ -20,7 +20,16 @@ if (!is_dir($configDirectory)) {
 define('PARAMETER_FILE', realpath($configDirectory).'/parameters.yml');
 define('ROOT_FOLDER', dirname(realpath($configDirectory)));
 
+$input = new \Symfony\Component\Console\Input\ArgvInput();
+$output = new \Symfony\Component\Console\Output\ConsoleOutput();
+
+define('DEBUG', true === $input->hasParameterOption(array('--debug', '-d')));
+
 $container = new ContainerBuilder();
+
+$container->set('jibe.application.output', $output);
+$container->set('jibe.application.input', $input);
+
 $locator = new FileLocator($configDirectory);
 
 try {
@@ -37,4 +46,4 @@ $container->addCompilerPass(new CommandsCompilerPass());
 $container->compile();
 
 $app = $container->get('jibe.application');
-$app->run();
+$app->run($input, $output);

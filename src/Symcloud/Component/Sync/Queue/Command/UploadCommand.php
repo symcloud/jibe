@@ -89,7 +89,7 @@ class UploadCommand implements CommandInterface
         }
 
         return array(
-            'cmd' => 'post',
+            'command' => 'post',
             'path' => $this->childPath,
             'file' => $fileHash,
         );

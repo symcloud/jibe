@@ -31,6 +31,14 @@ class Synchronizer implements SynchronizerInterface
      * @var CommandQueueInterface
      */
     private $commandQueue;
+    /**
+     * @var OutputInterface
+     */
+    private $output;
+    /**
+     * @var HashGenerator
+     */
+    private $hashGenerator;
 
     /**
      * Synchronizer constructor.
@@ -38,20 +46,34 @@ class Synchronizer implements SynchronizerInterface
      * @param ApiInterface $api
      * @param Filesystem $filesystem
      * @param CommandQueueInterface $commandQueue
+     * @param HashGenerator $hashGenerator
+     * @param OutputInterface $output
      */
-    public function __construct(ApiInterface $api, Filesystem $filesystem, CommandQueueInterface $commandQueue)
-    {
+    public function __construct(
+        ApiInterface $api,
+        Filesystem $filesystem,
+        CommandQueueInterface $commandQueue,
+        HashGenerator $hashGenerator,
+        OutputInterface $output
+    ) {
         $this->api = $api;
         $this->filesystem = $filesystem;
         $this->commandQueue = $commandQueue;
+        $this->hashGenerator = $hashGenerator;
+        $this->output = $output;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function sync(OutputInterface $output, $message)
+    public function sync($message)
     {
+        $this->output->writeln('Start sync:');
+
         $this->processFolder(ROOT_FOLDER);
+
+        $this->output->writeln('Finished sync: starting upload changed data');
+
         $this->commandQueue->execute($message);
     }
 
@@ -65,6 +87,7 @@ class Synchronizer implements SynchronizerInterface
         if (!$serverFolder) {
             $serverFolder = $this->getDirectory($this->filesystem->makePathRelative($path, ROOT_FOLDER));
         }
+        $this->output->writeln(sprintf('   process folder "%s"', $path));
 
         foreach (scandir($path) as $file) {
             if ($file !== '..' && $file !== '.' && $file !== '.symcloud' && strpos($file, '.') !== 0) {
@@ -84,12 +107,15 @@ class Synchronizer implements SynchronizerInterface
     private function processFile($path, $file, $serverFile = null)
     {
         $filePath = sprintf('%s/%s', $path, $file);
+        $this->output->writeln(sprintf('      process file "%s"', $filePath));
         if ($serverFile === null) {
-            return $this->commandQueue->upload($filePath, $this->filesystem->makePathRelative($filePath, ROOT_FOLDER));
+            return $this->commandQueue->upload($filePath);
         }
 
-        $fileHash = md5_file($filePath);
+        $fileHash = $this->hashGenerator->generateFileHash($filePath);
         if ($fileHash === (isset($serverFile['fileHash']) ? $serverFile['fileHash'] : '')) {
+            $this->output->writeln('       - not changed');
+
             return;
         }
 

@@ -46,17 +46,21 @@ class SyncCommand extends Command
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         if ($input->hasOption('message')) {
-            /** @var QuestionHelper $helper */
-            $helper = $this->getHelper('question');
-            $question = new Question('Message:');
-            $message = $helper->ask($input, $output, $question);
-            $input->setOption('message', $message);
+            if ($input->getOption('message') === true) {
+                /** @var QuestionHelper $helper */
+                $helper = $this->getHelper('question');
+                $question = new Question('Message:');
+                $message = $helper->ask($input, $output, $question);
+                $input->setOption('message', $message);
+            } else {
+                $input->setOption('message', '');
+            }
         }
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $message = $input->getOption('message');
-        $this->synchronizer->sync($output, $message);
+        $this->synchronizer->sync($message);
     }
 }
