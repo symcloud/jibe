@@ -17,6 +17,10 @@ interface CommandQueueInterface
 {
     public function upload($file);
 
+    public function delete($file);
+
+    public function download($file, $size);
+
     public function enqueue(CommandInterface $command);
 
     public function execute($message);

@@ -93,6 +93,14 @@ class SymcloudApi implements ApiInterface
     /**
      * {@inheritdoc}
      */
+    public function fileDownload($childPath, $saveTo)
+    {
+        return $this->client->get('/admin/api/file/' . ltrim($childPath, '/') . '?content', array('save_to' => $saveTo));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function patch($patch)
     {
         return $this->client->patch('/admin/api/files', array('body' => array('commands' => $patch)));

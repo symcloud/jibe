@@ -17,7 +17,8 @@ if (!is_dir($configDirectory)) {
     mkdir($configDirectory);
 }
 
-define('PARAMETER_FILE', realpath($configDirectory).'/parameters.yml');
+define('PARAMETER_FILE', realpath($configDirectory) . '/parameters.yml');
+define('CACHE_FOLDER', realpath($configDirectory) . '/cache');
 define('ROOT_FOLDER', dirname(realpath($configDirectory)));
 
 $input = new \Symfony\Component\Console\Input\ArgvInput();

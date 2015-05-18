@@ -39,6 +39,12 @@ interface ApiInterface
     public function fileExists($hash);
 
     /**
+     * @param string $childPath
+     * @param string $saveTo
+     */
+    public function fileDownload($childPath, $saveTo);
+
+    /**
      * @param RequestInterface $request
      *
      * @return Response
