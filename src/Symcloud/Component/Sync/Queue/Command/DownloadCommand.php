@@ -38,7 +38,7 @@ class DownloadCommand implements CommandInterface
     private $api;
 
     /**
-     * DeleteCommand constructor.
+     * DeleteServerCommand constructor.
      *
      * @param string $childPath
      * @param int $size

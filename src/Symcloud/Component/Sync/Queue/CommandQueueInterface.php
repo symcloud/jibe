@@ -17,7 +17,9 @@ interface CommandQueueInterface
 {
     public function upload($file);
 
-    public function delete($file);
+    public function deleteServer($file);
+
+    public function deleteLocal($file);
 
     public function download($file, $size);
 

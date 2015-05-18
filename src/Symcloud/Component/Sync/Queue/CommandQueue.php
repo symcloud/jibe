@@ -14,7 +14,7 @@ namespace Symcloud\Component\Sync\Queue;
 use Symcloud\Component\Sync\Api\ApiInterface;
 use Symcloud\Component\Sync\HashGenerator;
 use Symcloud\Component\Sync\Queue\Command\CommandInterface;
-use Symcloud\Component\Sync\Queue\Command\DeleteCommand;
+use Symcloud\Component\Sync\Queue\Command\DeleteServerCommand;
 use Symcloud\Component\Sync\Queue\Command\DownloadCommand;
 use Symcloud\Component\Sync\Queue\Command\UploadCommand;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -76,11 +76,18 @@ class CommandQueue implements CommandQueueInterface
         $this->enqueue(new UploadCommand($file, $childPath, $this->api, $this->hashGenerator));
     }
 
-    public function delete($file)
+    public function deleteServer($file)
     {
         $this->output->writeln('       - delete file');
 
-        $this->enqueue(new DeleteCommand($file));
+        $this->enqueue(new DeleteServerCommand($file));
+    }
+
+    public function deleteLocal($file)
+    {
+        $this->output->writeln('       - delete file');
+
+        $this->enqueue(new DeleteLocalCommand($file, $this->filesystem));
     }
 
     public function download($file, $size)

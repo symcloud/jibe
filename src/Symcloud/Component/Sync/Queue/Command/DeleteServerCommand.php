@@ -13,7 +13,7 @@ namespace Symcloud\Component\Sync\Queue\Command;
 
 use Symfony\Component\Console\Output\OutputInterface;
 
-class DeleteCommand implements CommandInterface
+class DeleteServerCommand implements CommandInterface
 {
     /**
      * @var string
@@ -21,7 +21,7 @@ class DeleteCommand implements CommandInterface
     private $childPath;
 
     /**
-     * DeleteCommand constructor.
+     * DeleteServerCommand constructor.
      *
      * @param string $childPath
      */
