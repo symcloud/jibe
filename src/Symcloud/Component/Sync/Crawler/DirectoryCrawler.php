@@ -12,8 +12,6 @@
 namespace Symcloud\Component\Sync\Crawler;
 
 use Symcloud\Component\Sync\HashGenerator;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 
 class DirectoryCrawler extends BaseCrawler implements CrawlerInterface
 {
@@ -48,23 +46,44 @@ class DirectoryCrawler extends BaseCrawler implements CrawlerInterface
 
     public function run()
     {
-        $finder = new Finder();
-        $finder->files()->in($this->directory);
+        $this->doRun();
+    }
 
-        /** @var SplFileInfo $file */
-        foreach ($finder as $file) {
-            $path = '/' . $file->getRelativePathname();
-            $this->setFile(
-                array(
-                    'name' => $file->getFilename(),
-                    'path' => $path,
-                    'fullPath' => $file->getPathname(),
-                    'fileHash' => $this->hashGenerator->generateFileHash($file->getPathname()),
-                    'version' => array_key_exists($path, $this->cachedFiles) ? $this->cachedFiles[$path]['version'] : null,
-                    'oldFileHash' => array_key_exists($path, $this->cachedFiles) ? $this->cachedFiles[$path]['fileHash'] : null,
-                    'size' => $file->getSize(),
-                )
-            );
+    private function doRun($path = '/')
+    {
+        $parentPath = rtrim($this->directory . '/' . $path, '/');
+        foreach (scandir($parentPath) as $child) {
+            if (strpos($child, '.') !== 0) {
+                $fullPath = rtrim($parentPath, '/') . '/' . ltrim($child, '/');
+                $childPath = rtrim(ltrim($path . '/' . $child, '/'), '/');
+
+                if (is_file($fullPath)) {
+                    $this->append($childPath);
+                } else {
+                    $this->doRun($childPath);
+                }
+            }
         }
+    }
+
+    private function append($path)
+    {
+        $path = '/' . $path;
+        $fullPath = $this->directory . $path;
+
+        $this->setFile(
+            array(
+                'name' => basename($path),
+                'path' => $path,
+                'fullPath' => $fullPath,
+                'fileHash' => $this->hashGenerator->generateFileHash($fullPath),
+                'version' => array_key_exists($path, $this->cachedFiles) ? $this->cachedFiles[$path]['version'] : null,
+                'oldFileHash' => array_key_exists(
+                    $path,
+                    $this->cachedFiles
+                ) ? $this->cachedFiles[$path]['fileHash'] : null,
+                'size' => filesize($fullPath),
+            )
+        );
     }
 }

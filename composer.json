@@ -12,8 +12,7 @@
         "league/oauth2-client": "0.10.*@dev",
         "guzzlehttp/guzzle": "~5.2",
         "symfony/filesystem": "~2.6",
-        "doctrine/cache": "~1.4",
-        "symfony/finder": "~2.6"
+        "doctrine/cache": "~1.4"
     },
     "license": "MIT",
     "authors": [

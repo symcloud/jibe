@@ -182,6 +182,7 @@ class Synchronizer implements SynchronizerInterface
     {
         // case 4
         if ($localFile['oldFileHash'] !== $localFile['fileHash'] &&
+            $localFile['version'] !== null &&
             $localFile['version'] < $serverFile['version'] &&
             $localFile['oldFileHash'] !== $serverFile['fileHash']
         ) {
