@@ -63,10 +63,9 @@ class DownloadCommand implements CommandInterface
         try {
             $this->filesystem->mkdir(dirname($path));
 
+            $this->filesystem->touch($path);
             if ($this->size > 0) {
                 $this->api->fileDownload($this->childPath, $path);
-            } else {
-                $this->filesystem->touch($path);
             }
 
             $output->writeln("  -> downloaded\r\n");
