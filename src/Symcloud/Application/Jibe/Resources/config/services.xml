@@ -17,6 +17,13 @@
             <tag name="jibe.command" default="true"/>
         </service>
 
+        <service id="jibe.command.status" class="Symcloud\Application\Jibe\Command\CacheClearCommand">
+            <argument type="string">cache-clear</argument>
+            <argument type="service" id="jibe.sync.synchronizer.filesystem"/>
+
+            <tag name="jibe.command" />
+        </service>
+
         <service id="jibe.command.sync" class="Symcloud\Application\Jibe\Command\SyncCommand">
             <argument type="string">sync</argument>
             <argument type="service" id="jibe.sync.synchronizer"/>

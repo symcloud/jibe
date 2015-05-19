@@ -14,6 +14,7 @@ namespace Symcloud\Component\Sync\Queue;
 use Symcloud\Component\Sync\Api\ApiInterface;
 use Symcloud\Component\Sync\HashGenerator;
 use Symcloud\Component\Sync\Queue\Command\CommandInterface;
+use Symcloud\Component\Sync\Queue\Command\DeleteLocalCommand;
 use Symcloud\Component\Sync\Queue\Command\DeleteServerCommand;
 use Symcloud\Component\Sync\Queue\Command\DownloadCommand;
 use Symcloud\Component\Sync\Queue\Command\UploadCommand;

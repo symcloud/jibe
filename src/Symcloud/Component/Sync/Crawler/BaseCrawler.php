@@ -20,17 +20,29 @@ abstract class BaseCrawler implements CrawlerInterface
         unset($file['_links']);
         unset($file['_embedded']);
 
-        $this->files[$file['path']] = $file;
+        $path = $file['path'];
+
+        if (array_key_exists($path, $this->files)) {
+            $this->files[$path] = array_merge($this->files[$path], $file);
+        } else {
+            $this->files[$path] = $file;
+        }
     }
 
     public function touchFile($path)
     {
-        $this->files[$path] = null;
+        $this->files[$path] = array(
+            'path' => $path,
+            'version' => 0,
+            'fileHash' => null,
+        );
     }
 
     public function removeFile($path)
     {
-        unset($this->files[$path]);
+        if (array_key_exists($path, $this->files)) {
+            unset($this->files[$path]);
+        }
     }
 
     public function getFiles()

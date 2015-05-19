@@ -111,20 +111,26 @@ class Synchronizer implements SynchronizerInterface
         foreach ($server->getFiles() as $path => $serverFile) {
             $localFile = $local->getFile($path);
 
+            $delete = false;
             if ($this->isUpload($serverFile, $localFile)) {
                 $this->commandQueue->upload($localFile['fullPath']);
+                $serverFile['fileHash'] = $localFile['fileHash'];
+                $serverFile['version'] = $localFile['version'] + 1;
             } elseif ($this->isDownload($serverFile, $localFile)) {
                 $this->commandQueue->download($path, $serverFile['size']);
             } elseif ($this->isDeleteLocal($serverFile, $localFile)) {
                 $this->commandQueue->deleteLocal($path);
+                $delete = true;
             } elseif ($this->isDeleteServer($serverFile, $localFile)) {
                 $this->commandQueue->deleteServer($path);
+                $delete = true;
             } elseif ($this->isConflict($serverFile, $localFile)) {
                 // TODO conflict
                 $this->output->writeln('<error>File conflict "' . $path . '"</error>');
+                continue;
             }
 
-            if (!$serverFile) {
+            if ($delete) {
                 $local->removeFile($path);
             } else {
                 $local->setFile($serverFile);
@@ -135,7 +141,7 @@ class Synchronizer implements SynchronizerInterface
     private function isUpload($serverFile, $localFile)
     {
         if (// case 6
-            ($serverFile === null && $localFile['version'] === null) ||
+            ($serverFile['fileHash'] === null && $localFile['version'] === null) ||
             // case 3
             ($localFile['fileHash'] !== $serverFile['fileHash'] && $localFile['version'] === $serverFile['version'])
         ) {
@@ -161,7 +167,7 @@ class Synchronizer implements SynchronizerInterface
     public function isDeleteLocal($serverFile, $localFile)
     {
         // case 8
-        if ($serverFile === null) {
+        if ($serverFile['fileHash'] === null) {
             return true;
         }
 
