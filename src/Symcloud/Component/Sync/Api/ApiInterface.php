@@ -32,13 +32,6 @@ interface ApiInterface
     public function fileUpload($filePath);
 
     /**
-     * @param string $hash
-     *
-     * @return bool
-     */
-    public function fileExists($hash);
-
-    /**
      * @param string $childPath
      * @param string $saveTo
      */

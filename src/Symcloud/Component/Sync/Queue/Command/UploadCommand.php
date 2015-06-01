@@ -61,37 +61,33 @@ class UploadCommand implements CommandInterface
      */
     public function execute(OutputInterface $output)
     {
-        $fileHash = $this->hashGenerator->generateFileHash($this->filePath);
-        if (!$this->api->fileExists($fileHash)) {
-            $fileSize = filesize($this->filePath);
-            $progress = new ProgressBar($output);
-            $progress->setMessage(sprintf('Upload File %s', $this->childPath));
+        $fileSize = filesize($this->filePath);
+        $progress = new ProgressBar($output);
+        $progress->setMessage(sprintf('Upload File %s', $this->childPath));
 
-            $progress->setFormat("%message%\n [%bar%] %percent:3s%% " . Helper::formatMemory($fileSize));
-            $progress->start($fileSize);
+        $progress->setFormat("%message%\n [%bar%] %percent:3s%% " . Helper::formatMemory($fileSize));
+        $progress->start($fileSize);
 
-            $request = $this->api->fileUpload($this->filePath);
-            $request->getEmitter()->on(
-                'progress',
-                function (ProgressEvent $e) use ($progress) {
-                    $progress->setProgress($e->uploaded);
-                }
-            );
+        $request = $this->api->fileUpload($this->filePath);
+        $request->getEmitter()->on(
+            'progress',
+            function (ProgressEvent $e) use ($progress) {
+                $progress->setProgress($e->uploaded);
+            }
+        );
 
-            $response = $this->api->send($request);
-            $progress->finish();
-            $output->writeln('');
-            $output->writeln('');
+        $response = $this->api->send($request);
+        $progress->finish();
+        $output->writeln('');
+        $output->writeln('');
 
-            $body = $response->getBody()->getContents();
-            $blobFile = json_decode($body, true);
-            $fileHash = $blobFile['hash'];
-        }
+        $body = $response->getBody()->getContents();
+        $blobFile = json_decode($body, true);
 
         return array(
             'command' => 'post',
             'path' => $this->childPath,
-            'file' => $fileHash,
+            'file' => $blobFile,
         );
     }
 }
