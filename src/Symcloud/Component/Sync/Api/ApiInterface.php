@@ -13,9 +13,15 @@ namespace Symcloud\Component\Sync\Api;
 
 use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\Response;
+use League\OAuth2\Client\Token\AccessToken;
 
 interface ApiInterface
 {
+    /**
+     * @return array
+     */
+    public function getReferences();
+
     /**
      * @param string $path
      * @param int $depth
@@ -48,4 +54,14 @@ interface ApiInterface
      * @param array $patch
      */
     public function patch($patch);
+
+    /**
+     * @param $accessToken
+     */
+    public function setToken(AccessToken $accessToken);
+
+    /**
+     * @param string $baseUrl
+     */
+    public function setBaseUrl($baseUrl);
 }

@@ -14,10 +14,12 @@ namespace Symcloud\Application\Jibe\Command;
 use League\OAuth2\Client\Provider\ProviderInterface;
 use League\OAuth2\Client\Token\AccessToken;
 use Symcloud\Application\Jibe\Configuration\ConfigurationDumper;
+use Symcloud\Component\Sync\Api\ApiInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\Question;
 
 class ConfigureCommand extends Command
@@ -55,6 +57,10 @@ class ConfigureCommand extends Command
      * @var ProviderInterface
      */
     private $provider;
+    /**
+     * @var ApiInterface
+     */
+    private $api;
 
     /**
      * ConfigureCommand constructor.
@@ -63,14 +69,21 @@ class ConfigureCommand extends Command
      * @param array $config
      * @param ConfigurationDumper $dumper
      * @param ProviderInterface $provider
+     * @param ApiInterface $api
      */
-    public function __construct($name, array $config, ConfigurationDumper $dumper, ProviderInterface $provider)
-    {
+    public function __construct(
+        $name,
+        array $config,
+        ConfigurationDumper $dumper,
+        ProviderInterface $provider,
+        ApiInterface $api
+    ) {
         parent::__construct($name);
 
         $this->config = $config;
         $this->dumper = $dumper;
         $this->provider = $provider;
+        $this->api = $api;
     }
 
     protected function configure()
@@ -163,7 +176,30 @@ class ConfigureCommand extends Command
             )
         );
 
+        $helper = $this->getHelper('question');
+        $this->api->setToken($accessToken);
+        $this->api->setBaseUrl(rtrim($input->getOption('server'), '/') . '/');
+
+        $references = $this->api->getReferences();
+        $data = array_map(
+            function ($reference) {
+                return $reference['name'];
+            },
+            $references
+        );
+
+        $question = new ChoiceQuestion('Which reference you want to choose?', $data);
+        $referenceName = $helper->ask($input, $output, $question);
+
+        $data = array_filter(
+            $references,
+            function ($reference) use ($referenceName) {
+                return $reference['name'] === $referenceName;
+            }
+        );
+
         $this->dumper->setConfig('server', rtrim($input->getOption('server'), '/') . '/');
+        $this->dumper->setConfig('reference', $data[0]['hash']);
         $this->dumper->setConfig(
             'client',
             array(

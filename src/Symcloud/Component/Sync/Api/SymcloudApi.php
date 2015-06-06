@@ -35,19 +35,40 @@ class SymcloudApi implements ApiInterface
     private $provider;
 
     /**
+     * @var string
+     */
+    private $baseUrl;
+    /**
+     * @var
+     */
+    private $reference;
+
+    /**
      * SymcloudApi constructor.
      *
      * @param Client $client
      * @param AccessToken $token
      * @param ProviderInterface $provider
+     * @param string $reference
      */
-    public function __construct(Client $client, AccessToken $token, ProviderInterface $provider)
+    public function __construct(Client $client, AccessToken $token, ProviderInterface $provider, $reference)
     {
         $this->client = $client;
-        $this->token = $token;
         $this->provider = $provider;
+        $this->reference = $reference;
 
-        $this->client->setDefaultOption('headers', $this->provider->getHeaders($this->token));
+        $this->setToken($token);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getReferences()
+    {
+        $response = $this->client->get((!$this->baseUrl ? '' : rtrim($this->baseUrl, '/')) . '/admin/api/references');
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        return $data['_embedded']['references'];
     }
 
     /**
@@ -56,7 +77,7 @@ class SymcloudApi implements ApiInterface
     public function getDirectory($path = '/', $depth = -1)
     {
         $path = ($path !== './') ? ('/' . ltrim($path, '/')) : '';
-        $response = $this->client->get(rtrim('/admin/api/directory' . $path, '/'));
+        $response = $this->client->get(rtrim('/admin/api/directory/' . $this->reference . $path, '/'));
 
         return json_decode($response->getBody()->getContents(), true);
     }
@@ -80,7 +101,10 @@ class SymcloudApi implements ApiInterface
      */
     public function fileDownload($childPath, $saveTo)
     {
-        return $this->client->get('/admin/api/file/' . ltrim($childPath, '/') . '?content', array('save_to' => $saveTo));
+        return $this->client->get(
+            '/admin/api/file/' . $this->reference . '/' . ltrim($childPath, '/') . '?content',
+            array('save_to' => $saveTo)
+        );
     }
 
     /**
@@ -88,7 +112,10 @@ class SymcloudApi implements ApiInterface
      */
     public function patch($patch)
     {
-        return $this->client->patch('/admin/api/files', array('body' => array('commands' => $patch)));
+        return $this->client->patch(
+            '/admin/api/references/' . $this->reference,
+            array('body' => array('commands' => $patch))
+        );
     }
 
     /**
@@ -97,5 +124,22 @@ class SymcloudApi implements ApiInterface
     public function send(RequestInterface $request)
     {
         return $this->client->send($request);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setToken(AccessToken $accessToken)
+    {
+        $this->token = $accessToken;
+        $this->client->setDefaultOption('headers', $this->provider->getHeaders($this->token));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setBaseUrl($baseUrl)
+    {
+        $this->baseUrl = $baseUrl;
     }
 }
