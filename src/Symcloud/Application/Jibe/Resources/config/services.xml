@@ -6,8 +6,7 @@
     <services>
         <service id="jibe.application" class="Symcloud\Application\Jibe\JibeApplication">
             <argument type="string">Symcloud JIBE</argument>
-            <argument type="service" id="jibe.application.input"/>
-            <argument type="service" id="jibe.application.output"/>
+            <argument type="string">@package_version@</argument>
         </service>
 
         <service id="jibe.command.status" class="Symcloud\Application\Jibe\Command\StatusCommand">
