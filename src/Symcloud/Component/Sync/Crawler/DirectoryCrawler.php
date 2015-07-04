@@ -53,7 +53,7 @@ class DirectoryCrawler extends BaseCrawler implements CrawlerInterface
     {
         $parentPath = rtrim($this->directory . '/' . $path, '/');
         foreach (scandir($parentPath) as $child) {
-            if (strpos($child, '.') !== 0) {
+            if (strpos($child, '.') !== 0 && $child !== 'jibe.phar') {
                 $fullPath = rtrim($parentPath, '/') . '/' . ltrim($child, '/');
                 $childPath = rtrim(ltrim($path . '/' . $child, '/'), '/');
 
