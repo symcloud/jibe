@@ -82,12 +82,12 @@ class UploadCommand implements CommandInterface
         $output->writeln('');
 
         $body = $response->getBody()->getContents();
-        $blobFile = json_decode($body, true);
+        $chunkFile = json_decode($body, true);
 
         return array(
             'command' => 'post',
             'path' => $this->childPath,
-            'file' => $blobFile,
+            'file' => $chunkFile,
         );
     }
 }

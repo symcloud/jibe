@@ -89,8 +89,8 @@ class SymcloudApi implements ApiInterface
     {
         $request = $this->client->createRequest(
             'POST',
-            '/admin/api/blobs',
-            array('body' => array('blob-file' => new PostFile('blob-file', fopen($filePath, 'r'))))
+            '/admin/api/chunks',
+            array('body' => array('chunk-file' => new PostFile('chunk-file', fopen($filePath, 'r'))))
         );
 
         return $request;
